@@ -1,0 +1,25 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. Creo l'asse X (scelgo da 0.1 a 5 per evitare problemi con 1/x e logaritmi)
+x = np.linspace(0.1, 5, 1000)
+
+# 2. Calcolo tutte le "care cose" in un colpo solo
+y_cubo = x**3
+y_iperbole = 1 / x
+y_logaritmo = np.log(x)
+
+# 3. Disegno le linee (metto delle etichette per la legenda)
+plt.plot(x, y_cubo, label='Cubo (x**3)', color='blue')
+plt.plot(x, y_iperbole, label='Iperbole (1/x)', color='red')
+plt.plot(x, y_logaritmo, label='Logaritmo (ln(x))', color='green')
+
+# 4. Aggiusto la grafica
+plt.ylim(-5, 10) # Metto un limite all'asse Y per non far scappare l'iperbole all'infinito
+plt.axhline(0, color='black', linewidth=0.8) # Disegno l'asse X centrale
+plt.legend()
+plt.title("Funzioni Matematiche con NumPy")
+plt.grid(True, linestyle='--')
+
+# 5. Mostro il risultato!
+plt.show()
