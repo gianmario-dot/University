@@ -4,18 +4,25 @@
 # Fitto i punti con una curva che li approssimi in modo adeguato
 
 import matplotlib.pyplot as plt
-from matplotlib.animation import FFMpegWriter  # libreria per la creazione di video
 import numpy as np
 import configparser
 import os
+from matplotlib.animation import FFMpegWriter  # libreria per la creazione di video
+
+
+
 
 def chiudi_tutto(event):
     print("Closing the simulation...")
     raise SystemExit
 
+
+
+
 def load_config(file_path):
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser()            # Crea oggetto che contiene la categoria e la chiave con il valore corrispondente
     config.read(file_path)
+
 
     # Parametri Generali
     params = {
@@ -30,8 +37,9 @@ def load_config(file_path):
         'fps': config.getint('SIMULAZIONE', 'fps'),
         'dpi': config.getint('SIMULAZIONE', 'dpi'),
         'nome_file': config.get('SIMULAZIONE', 'nome_file'),
-         'seme': config.getint('SIMULAZIONE', 'seme'),
+        'seme': config.getint('SIMULAZIONE', 'seme'),
     }
+
 
     # Proprietà Atomi (Masse e Colori)
     # Usiamo 0 per A e 1 per B
@@ -60,9 +68,12 @@ def load_config(file_path):
 
     return params
 
+
+
+
 def setup_graphics(params):
     # Creiamo la figura e il grafico con le dimensioni e DPI del file ini
-    figura, grafico = plt.subplots(figsize=(8, 8), dpi=params['dpi'], num='By Franco Meinardi. Normal Modes')
+    figura, grafico = plt.subplots(figsize=(8, 8), dpi=params['dpi'], num='By Gianmrio Pelanda - Crystal\'s Formation')
     
     # Impostiamo i limiti degli assi in base alle dimensioni dello spazio
     grafico.set_xlim(0, params['width'])
@@ -85,7 +96,22 @@ def setup_graphics(params):
 
 
 def main():
-    
+   
+    # Trova il file e leggwe quello corretto
+    percorso=os.path.dirname(os.path.abspath('__file__'))
+    nome_completo=os.path.join(percorso, 'Config.ini')
+
+    # Routine cotnrollo errore
+    try:
+        # Passo alla funzuione dizionario i parametri
+        params=load_config(nome_completo)
+        print(params)
+
+    # Gestione errore con motivo errore
+    except Exception as errore:
+        print(errore)
+        exit()          # Istruzione operative system
+   
 
 
 
