@@ -34,6 +34,8 @@ def load_config(file_path):
         'dt': config.getfloat('SIMULAZIONE', 'dt'),
         'steps': config.getint('SIMULAZIONE', 'steps'),
         'cutoff': config.getfloat('SIMULAZIONE', 'cutoff'),
+        'dist_min': config.getfloat('SIMULAZIONE', 'dist_min'),
+        'vel_max': config.getfloat('SIMULAZIONE', 'velocita_max'),
         'fps': config.getint('SIMULAZIONE', 'fps'),
         'dpi': config.getint('SIMULAZIONE', 'dpi'),
         'nome_file': config.get('SIMULAZIONE', 'nome_file'),
@@ -95,10 +97,95 @@ def setup_graphics(params):
 
 
 
+
+
+
+def inizializzazione(params):
+    n_a=params['n_a']
+    n_b=params['n_b']
+    n_tot=n_a+n_b
+    
+    posizioni=np.zeros((n_tot, 2))
+    tipi=np.array([0]*n_a+[1]*n_b)
+
+    # Dobbiamo capire quale è la minima distanza a cui stanno gli atomi
+    # Sappiamo che la distanza di equilibrio è sigma (1,5 o 2 sigma)
+    dist_minima=params['dist_min']*np.max(params['sigmas'])**2                    # Usiamo il più grande dei parametri dato che sono più atomi
+
+
+    # Generiamo le x e le y
+    count=0
+    troppi=0
+    np.random.seed(params['seme'])
+
+    while count<n_tot:
+        # Gestione bordi
+        margine=0.05
+
+        # Abbiamo usato un seme cosi che se non cambia il smee la rarndomizzaizone sarà sempre uguale 
+        # e cosi la simulazione (per cambiare simulazione devo cambiare seme)
+        new_pos = np.array([np.random.uniform(margine*params['width'], (1-margine)*params['width']), 
+                            np.random.uniform(margine*params['height'], (1-margine)*params['height'])])
+
+        # Verifico se posso accettare le posizioni
+        if count==0:
+            posizioni[0]=new_pos
+            count+=1
+        
+        else: 
+            diff=posizioni[:count]-new_pos              # Vettore 
+            dist_sq=np.sum(diff**2, axis=1)             # Scrivo l'asse poichè voglio sommare sulle righe
+
+            if np.all(dist_sq>dist_minima):
+                posizioni[count]=new_pos
+                count+=1
+
+            troppi+=1
+             # Dato che è randomico potrei a un certo punto finire lo spazio e non riuscire più a mettere gli atomi mantenendo le distanze minime
+            if troppi>1000*n_tot:
+                print(f'Troppi atomi non c\'è spazio, sono arrivato a {count}')
+                raise SystemExit
+
+            
+
+    # Genero le velocita
+    velocita=((np.random.rand(n_tot, 2))-0.5)*params['vel_max']               # Genera per ogni atomo una velocità x e y con valori tra -0.5 e 0.5 più il valore dal file 
+
+
+
+
+    return posizioni, velocita, tipi
+
+
+
+
+
+
+
+def update_plot(grafico, scatt_object, pos, tipo):
+
+    for t, scatt in enumerate(scatt_object):
+        mask=(t==tipo)
+        scatt.set_offsets(pos[mask])
+
+
+    plt.draw()
+    plt.pause(0.001)
+
+    return
+
+
+
+
+
+
+
+
+
 def main():
    
     # Trova il file e leggwe quello corretto
-    percorso=os.path.dirname(os.path.abspath('__file__'))
+    percorso=os.path.dirname(os.path.abspath(__file__))
     nome_completo=os.path.join(percorso, 'Config.ini')
 
     # Routine cotnrollo errore
@@ -114,11 +201,37 @@ def main():
    
 
 
+    pos, vel, tipo=inizializzazione(params)
 
 
+    # Inizializzazione grafica
+    figura, grafico=setup_graphics(params)
 
+
+    # Creazione oggetti chd si muovono atomi 1 e 2 srappresentati dai colori diversi
+    scatt_object=[]
+
+    for t in range(2):               # 2 perche sono i 2 possibili atomi
+        mask=(t==tipo)               # Fa confronto t e tipo e quindi sarà solo True e False e avremo un array di solo vero e falso 
+
+        # Se mask è vero prende le coordinate
+        scatt=grafico.scatter(pos[mask][0], pos[mask][1], c=params['colors'][t], edgecolors='black', linewidths=1, label=f'Type {t}')          
+        
+        scatt_object.append(scatt)
+
+
+        grafico.legend(loc='upper right')
+
+
+        # Aggiornamento del grafico
+        update_plot(grafico, scatt_object, pos, tipo)
+
+
+    
+    
 
 
 
 if __name__ == '__main__':
     main()
+    plt.show()
