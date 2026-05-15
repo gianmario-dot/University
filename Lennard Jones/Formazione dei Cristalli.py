@@ -36,11 +36,14 @@ def load_config(file_path):
         'cutoff': config.getfloat('SIMULAZIONE', 'cutoff'),
         'dist_min': config.getfloat('SIMULAZIONE', 'dist_min'),
         'vel_max': config.getfloat('SIMULAZIONE', 'velocita_max'),
+        'raffreddamento': config.getfloat('SIMULAZIONE', 'raffreddamento'),
         'fps': config.getint('SIMULAZIONE', 'fps'),
         'dpi': config.getint('SIMULAZIONE', 'dpi'),
+        'step_salva': config.getint('SIMULAZIONE', 'n_step_salva'),
         'nome_file': config.get('SIMULAZIONE', 'nome_file'),
         'seme': config.getint('SIMULAZIONE', 'seme'),
     }
+
 
 
     # Proprietà Atomi (Masse e Colori)
@@ -178,6 +181,98 @@ def update_plot(grafico, scatt_object, pos, tipo):
 
 
 
+def calcola_forze(pos, tipi, params):
+    n_totale=len(tipi)
+    forze=np.zeros_like(pos)
+
+    # Devo usare ora le sigma per le forze solo alla distanza di cutoff
+    #  Creo una matrice con le sigma e epsilon per non doverle richiamare ogni volta
+    sigmas=params['sigmas']
+    epsilon=params['epsilons']
+    cutoff_sq=params['cutoff']**2              # Quadrato della distanza per valutare talgio
+
+    # Faccio un solo ciclo + un secondo vettoriale
+    for i in range(n_totale):
+        dist=pos[i+1:]-pos[i]               # Vettore dell'atomo del dx e dy
+        
+        dist_sq=np.sum(dist**2, axis=1)     # Asse 1 è per sommare sulle righe
+
+        # Calcolo solo se la distanza è minore del cutoff, creo una maschera di vero e falso
+        mask=dist_sq<cutoff_sq
+
+        # Controllo se nessun atomo è minore del cutoff chiudo programma
+        if not np.any(mask):            # Se è tutto falso salta il calcolo
+            continue
+
+        tipo_i=tipi[i]
+
+        #Calcolo i tipi di atomi più vicini al cutoff rispetto a quello che stiamo considerando
+        tipo_j=tipi[i+1:][mask]
+
+        # Vettore con tutte le sigma e le epsilon che voglio calcolare
+        s=sigmas[tipo_i, tipo_j]
+        e=epsilon[tipo_i, tipo_j]
+
+        # Distanza tipi i e j
+        r=np.sqrt(dist_sq[mask])
+
+
+        # Ricavo il valore della forza per Lennard-Jones e il suo potenziale
+        sr=s/r              # Sigma su r
+        sr6=sr**6
+        sr12=sr**12
+
+        forza_scalare=-24*e*(2*sr12-sr6)/r[:, np.newaxis]
+
+
+        # Ricavo la forza vettoriale
+        f_vettore=(forza_scalare*dist[mask])/r
+
+
+        forze[i]=np.sum(f_vettore, axis=0)              # Sommo lungo la colonna
+        forze[i+1:][mask]-=f_vettore
+
+    return
+
+
+
+
+
+
+
+
+def Gestisci_rimbalzi(pos, vel, params):
+    w, h=params['width'], params['height']
+
+    mask_x_low=pos[:,0]<=0      # Restituisce vero se pos x di atomo è minore di zero
+    mask_x_top=pos[:,0]>=w      # Restituisce vero se pos x di atomo è maggiore di altezza
+
+    vel[mask_x_low, 0]*=-1
+    vel[mask_x_top, 0]*=-1
+    pos[mask_x_low, 0]=0.01
+    pos[mask_x_top, 0]=w-0.01
+
+
+
+
+
+    mask_y_low=pos[:,1]<=0      # Restituisce vero se pos y di atomo è minore di zero
+    mask_y_top=pos[:,1]>=h      # Restituisce vero se pos y di atomo è maggiore di altezza
+
+    vel[mask_y_low, 1]*=-1
+    vel[mask_y_top, 1]*=-1
+    pos[mask_y_low, 1]=0.01
+    pos[mask_y_top, 1]=h-0.01    
+
+
+    return
+
+
+
+
+
+
+
 
 
 
@@ -201,7 +296,7 @@ def main():
    
 
 
-    pos, vel, tipo=inizializzazione(params)
+    pos, vel, tipi=inizializzazione(params)
 
 
     # Inizializzazione grafica
@@ -212,7 +307,7 @@ def main():
     scatt_object=[]
 
     for t in range(2):               # 2 perche sono i 2 possibili atomi
-        mask=(t==tipo)               # Fa confronto t e tipo e quindi sarà solo True e False e avremo un array di solo vero e falso 
+        mask=(t==tipi)               # Fa confronto t e tipo e quindi sarà solo True e False e avremo un array di solo vero e falso 
 
         # Se mask è vero prende le coordinate
         scatt=grafico.scatter(pos[mask][0], pos[mask][1], c=params['colors'][t], edgecolors='black', linewidths=1, label=f'Type {t}')          
@@ -223,12 +318,71 @@ def main():
         grafico.legend(loc='upper right')
 
 
-        # Aggiornamento del grafico
-        update_plot(grafico, scatt_object, pos, tipo)
+    # Aggiornamento del grafico
+    update_plot(grafico, scatt_object, pos, tipi)
 
 
+    nome_file_animazione=os.path.join(percorso, params['nome_file'])
+
+    # Facciamo un routine che porti alla creazione di un file ini specifico della simulazioen cos+ che se gioco e cabio i parametri so sempre ricondurmi ai param della singola
+    nome_file_configurazione=nome_file_animazione+'.ini'
+    nome_file_animazione+='.avi'
+
+    # Salvo il file, 
+    with open(nome_file_configurazione, 'w') as f:
+        for chiave, valore in params.items():
+            stringa=chiave+ '= '+ str(valore)+ '\n'
+            f.write(stringa)
+
     
+    writer=FFMpegWriter(fps=params['fps'], codec='mpeg4')
+    with writer.saving(figura, nome_file_animazione, dpi=params['dpi']):
+
+        # Calcolo tutte le forze nella prima poszione
+        dt=params['dt']
+        forze=calcola_forze(pos, tipi, params)
+        m=params['masses'][tipi][:,np.newaxis]             # Matrice con tutte le masse di tutti gli atomi che poi reshapo per girarla
+
+        for i in range(params['steps']):
+            acc=forze/m
+            pos+=vel*dt+0.5*acc*dt**2
+            vel+=acc*dt*0.5
+
+
+
+            # Gestisci rimbalzi per non fare uscire
+            Gestisci_rimbalzi(pos, vel, params)
+
+
+
+            forze=calcola_forze(pos, tipi, params)
+            nuova_acc=forze/m
+            nuova_vel=nuova_acc*dt
+            vel+=(vel+nuova_vel)/2
+
+
+            #Considero un raffreddamento che rallenta un po la velocità
+            vel*=params['raffreddamento']
+
+
+            # Salvo ogni tot passi
+            if i%params['step_salva']==0:
+                update_plot(grafico, scatt_object, pos, tipi)
+
+                grafico.set_title(f'Step = {i}')
+                writer.grab_frame()
+
+                plt.pause(0.001)
     
+    plt.show()
+
+
+
+
+
+
+
+
 
 
 
