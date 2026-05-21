@@ -13,7 +13,7 @@ from matplotlib.animation import FFMpegWriter  # libreria per la creazione di vi
 
 
 def chiudi_tutto(event):
-    print("Closing the simulation...")
+    print("Closing the simulation")
     raise SystemExit
 
 
@@ -60,8 +60,8 @@ def load_config(file_path):
     e_ab = config.getfloat('ATOMO_A', 'epsilon_ab')
     e_bb = config.getfloat('ATOMO_B', 'epsilon_bb')
 
-    # Convertiamo le matrici in array NumPy prima di restituirle (è veloce perchè i dizionario contiene ...
-    # ... solo il puntatore alla matrice)
+    # Convertiamo le matrici in array NumPy prima di restituirle (è veloce perchè i dizionario contiene 
+    #  solo il puntatore alla matrice)
     params['sigmas'] = np.array([[s_aa, s_ab], 
                                  [s_ab, s_bb]])
     

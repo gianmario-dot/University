@@ -7,10 +7,10 @@
 
 
 
-# Con un Monte Carlo simuliamo la magnetizzazione di un cristallo e la sua transizione di fase alla ... 
-# ... temperatura di Curie. Nella cartella c'è una micro-dispensa sulla fisica di questi sistemi ...
-# ... e su cume simularli. Sempre nella cartella c'è anche l'articolo originale in cui per la ...
-# ... prima volta è stata fatta una simmulazione Montecarlo con un computer (a valvole).
+# Con un Monte Carlo simuliamo la magnetizzazione di un cristallo e la sua transizione di fase alla  
+#  temperatura di Curie. Nella cartella c'è una micro-dispensa sulla fisica di questi sistemi 
+#  e su cume simularli. Sempre nella cartella c'è anche l'articolo originale in cui per la 
+#  prima volta è stata fatta una simmulazione Montecarlo con un computer (a valvole).
 
 # Questa volta scriviamo il codice da "fisici" piuttosto che da "informatici"
 # => Codice tutto "dritto" senza main, e con un minimo di funzioni solo dove sono proprio necessarie.

@@ -32,8 +32,8 @@ for x in Numeri_primi:
         Divisori.append(x)
 
 # 3. LA NUOVA LOGICA FINALE:
-# Se la lista dei divisori contiene un solo numero, ed è proprio N_input...
-# ...allora N_input non ha altri sottomultipli, quindi è lui stesso PRIMO!
+# Se la lista dei divisori contiene un solo numero, ed è proprio N_input
+# allora N_input non ha altri sottomultipli, quindi è lui stesso PRIMO!
 if len(Divisori) == 1 and Divisori[0] == N_input:
     print('Numero primo: \n 1 ,', N_input)
 else:

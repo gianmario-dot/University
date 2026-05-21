@@ -66,11 +66,11 @@ def disegna_modi_normali(posizioni,autovalori,autovettori,modo):  # routine di a
     plt.show()   # qui il programma non arriva mai per cui queste 2 istruzioni sono ridondanti
     return
 
-# routine per proiettare gli autovalori corrispondenti all'autovalore 0, su due autovettori corrspondenti ...
-# ... ad una "pura" traslazione su x e su y, più una rotazione intorno al centro di massa.
-# in realtà, non esistendo autovalori esattamente uguali a 0 dato che la precsione di un calcolo numerico è limitata ...
-# ... dalle cifre significative, la proiezione viene fatta per i primi 3 autovalori. Se ci fossero altri autovalori con energia molto ...
-# ... bassa non è detto che funzioni bene. 
+# routine per proiettare gli autovalori corrispondenti all'autovalore 0, su due autovettori corrspondenti 
+#  ad una "pura" traslazione su x e su y, più una rotazione intorno al centro di massa.
+# in realtà, non esistendo autovalori esattamente uguali a 0 dato che la precsione di un calcolo numerico è limitata 
+#  dalle cifre significative, la proiezione viene fatta per i primi 3 autovalori. Se ci fossero altri autovalori con energia molto 
+#  bassa non è detto che funzioni bene. 
 def sistema_traslazioni(autovettori):   
     dimens=len(autovettori[:,0])
     e1=np.arange(dimens)%2
@@ -135,13 +135,13 @@ with open(nome_file,'r') as f:
         else:
             fine_atomi=True
     
-    for i in range(len(masse)):  # dal carattere "_" in poi leggo le costanti elastiche delle molle ...
-        riga=f.readline().strip('\n')   # ... elimino da ogni riga il fine riga ...
-        righe=riga.split(',')  # ... le splitto ...
+    for i in range(len(masse)):  # dal carattere "_" in poi leggo le costanti elastiche delle molle 
+        riga=f.readline().strip('\n')   #  elimino da ogni riga il fine riga 
+        righe=riga.split(',')  #  le splitto 
         molle.append([float(c) for c in righe])   # metto il risultato nella matrice delle costanti elastice (matrice delle adiacenzze)
 
-matrice_D=calcola_matrice(posizioni,masse,molle)   # lancio il calcolo della matrice dinamica ...
-autovalori,autovettori=np.linalg.eigh(matrice_D)   # ... e ne trovo autovalori ed autovettori. 
+matrice_D=calcola_matrice(posizioni,masse,molle)   # lancio il calcolo della matrice dinamica 
+autovalori,autovettori=np.linalg.eigh(matrice_D)   #  e ne trovo autovalori ed autovettori. 
 print(autovalori,'\n\n')
 
 autovettori=sistema_traslazioni(autovettori)       # ruoto quelli a energia 0 in modo da separare traslazioni e rotazione 

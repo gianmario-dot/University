@@ -15,7 +15,7 @@ def inserisci_costanti_elastiche(Figura,Grafico,casella_txt,punti):
         nonlocal primo_click
         nonlocal punto1
         #nonlocal molle
-        if parametri.inaxes!=Grafico:  # se il click è avvunuto fuori dal grafico ... non fare nulla 
+        if parametri.inaxes!=Grafico:  # se il click è avvunuto fuori dal grafico  non fare nulla 
             return
         if parametri.button==1:  # se si è clickato il tato sx, leggi la posizione e il valore della carica e aggiungilo in punti[]
             try:   # non fatto a lezione. Se si verifica un errore lo gestisce.
@@ -85,7 +85,7 @@ def seleziona_punti(Figura,Grafico,casella_txt):
     punti=[]  # lista con posizione x,y e carica delle cariche] 
     def onclick(parametri):  # funzione attivata dal click del mouse
         nonlocal finito   # 'nonlocal' permette la modifica di una variabile della funzion madre che altrimenti sarrebbe accessibile solo in lettura
-        if parametri.inaxes!=Grafico:  # se il click è avvunuto fuori dal grafico ... non fare nulla 
+        if parametri.inaxes!=Grafico:  # se il click è avvunuto fuori dal grafico  non fare nulla 
             return
         if parametri.button==1:  # se si è clickato il tato sx, leggi la posizione e il valore della carica e aggiungilo in punti[]
             try:   # non fatto a lezione. Se si verifica un errore lo gestisce.

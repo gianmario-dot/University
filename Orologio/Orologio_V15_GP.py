@@ -281,16 +281,16 @@ def main():
             ln_sc.set_angle(nuovo_sc)
             hr_line.set_angle(nuovo_sc)
             
-            # 2. SE i secondi hanno fatto un giro completo...
+            # 2. SE i secondi hanno fatto un giro completo
             if ln_sc.get_angle() >= 360:
                 ln_sc.set_angle(0)
 
                 
-                # ...faccio scattare l'ingranaggio dei minuti (+6 gradi)
+                # faccio scattare l'ingranaggio dei minuti (+6 gradi)
                 nuovo_mn = ln_mn.get_angle() - 6
                 ln_mn.set_angle(nuovo_mn)
 
-                # 3. SE i minuti hanno fatto un giro completo...
+                # 3. SE i minuti hanno fatto un giro completo
                 if ln_mn.get_angle() >= 360:
                     ln_mn.set_angle(0) # Azzero l'ingranaggio!
                     

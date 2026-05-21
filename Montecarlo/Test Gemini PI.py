@@ -40,7 +40,7 @@ for i in range(1, N + 1):
         inside_count += 1
         
     # LOGICA LOGARITMICA CORRETTA:
-    # Aggiorna il grafico solo quando 'i' raggiunge esattamente 'Io' (1, 10, 100, 1000...)
+    # Aggiorna il grafico solo quando 'i' raggiunge esattamente 'Io' (1, 10, 100, 1000)
     if i == Io:
         pi_greco = (inside_count / i) * 4
         

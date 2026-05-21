@@ -13,7 +13,7 @@ def on_key(event):
     global salta_animazione
     if event.key == ' ' or event.key == 'space' or event.key == 'enter':
         salta_animazione = True
-        print("\n TASTO PREMUTO:  Calcolo in corso... ")
+        print("\n TASTO PREMUTO:  Calcolo in corso ")
 
 
 def disegna_funzione(inizio, fine):

@@ -231,11 +231,11 @@ def main(par):
     writer = FFMpegWriter(fps=24, codec='h264', bitrate=5000)
     #plt.pause(5)            #possibilità di mettere la finestra a tutto schermo e mi da il tempo di farlo
     
-    print("Inizio il rendering del video. Mettiti comodo per un minuto...")
+    print("Inizio il rendering del video. Mettiti comodo per un minuto")
     
     with writer.saving(Figura, par.nome_file, dpi=160):
         
-        # Facciamo 12.000 calcoli fisici...
+        # Facciamo 12.000 calcoli fisici
         for step in range(12000): 
             
             # La fisica gira a ogni ciclo (velocissima, ci mette un millisecondo)
@@ -263,7 +263,7 @@ def main(par):
                 
                 # Un bel contatore per farti vedere a che punto sei (arriverà a 300)
                 frame_attuali = step // 15
-                print(f"Creazione video in corso... Frame salvati: {frame_attuali} / {12000/15}", end='\r')
+                print(f"Creazione video in corso Frame salvati: {frame_attuali} / {12000/15}", end='\r')
                 
     print("\nFinito! Il video è pronto nella tua cartella.")
 

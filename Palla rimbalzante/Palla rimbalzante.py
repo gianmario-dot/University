@@ -39,7 +39,7 @@ def main():
     b, = Grafico.plot(x, y1) 
 
     plt.show()
-    input('Premi Invio per rimuovere il coseno...')  # Aspetta che l'utente prema Invio 
+    input('Premi Invio per rimuovere il coseno')  # Aspetta che l'utente prema Invio 
 
     
     plt.draw()     # Forza Matplotlib a disegnare subito la finestra
