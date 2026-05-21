@@ -1,5 +1,3 @@
-# Ciao, sono Gianmario! 
-
 # 🔬 Computational Physics & Algorithms Archive
 
 Welcome to this repository! This collection represents an evolving archive of my projects related to **Computational Physics**, **Numerical Methods**, and the study of **Data Structures and Algorithms**.
